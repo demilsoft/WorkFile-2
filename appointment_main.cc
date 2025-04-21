@@ -7,10 +7,17 @@
 
 /*
  *  1. Open and write appointment at end of file
+ *          Format - Cleanup and add header
+ *          save (append)
  *  2. Open and delete matching title
+ *          Delete Record
  *  3. Open and delete matching starting military time
+ *          Delete Record
  *  4. Open and print matching military time
+ *          Add header row
  *  5. Open and print current daily schedule ordered by military time
+ *          Search by Year | Month | Day
+ *          Sort by time
  *
  * Will need a menu 1 = Add new Appt, 2 = Print Daily Schedule, 3 = Print Appts at Time, 4 = Delete Title, 5 = Delete Time
  */
@@ -112,7 +119,10 @@ void print_daily() {
     std::string line;
     while (std::getline(file, line)) {    // Read lines until end of file
         line = trimSpaces(line);
-        std::cout << line << std::endl;     // Print each line
+        if (line != "")
+        {
+            std::cout << line << std::endl;     // Print each line
+        }
     }
 
     file.close();   // Close the file
