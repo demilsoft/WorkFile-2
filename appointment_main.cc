@@ -7,7 +7,7 @@
 
 /*
  *  1. Open and write appointment at end of file
- *  2. Open and  delete matching title
+ *  2. Open and delete matching title
  *  3. Open and delete matching starting military time
  *  4. Open and print matching military time
  *  5. Open and print current daily schedule ordered by military time
@@ -22,17 +22,21 @@
 // Function declarations
 void add_appt();
 void print_daily();
+void print_time(string miltimeout);
 void find_title(string titlestring);
+string toUpper(const string& s);
+string removeSpaces(const string& s);
+string trimSpaces(const string& s);
 
 using namespace std;
 
 int main(int argc, char const *argv[]) {
 
     // Class declaration
-    //Appointment a1;
-    int menuitem;
+    Appointment a1;
+    int menuitem, miltimein;
     bool quit = false;
-    string titlename;
+    string titlename, miltimeout;
 
     /* While Loop for Menu Items */
     while (!quit) {
@@ -46,12 +50,16 @@ int main(int argc, char const *argv[]) {
             case 2: /* print daily here */;
                 print_daily();
                 break;
-            case 3: /* print by time here */;
+            case 3: /* print by time here */
+                cout << "Enter military time to search: " << endl;
+                cin >> miltimein;
+                miltimeout = a1.militaryToStandard(miltimein);
+                print_time(miltimeout);
+                break;
+            case 4: /* delete by title  here */;
                 cout << "Enter title to search: " << endl;
                 cin >> titlename;
                 find_title(titlename);
-                break;
-            case 4: /* delete by title  here */;
                 break;
             case 5: /* delete by time here */;
                 break;
@@ -103,6 +111,7 @@ void print_daily() {
 
     std::string line;
     while (std::getline(file, line)) {    // Read lines until end of file
+        line = trimSpaces(line);
         std::cout << line << std::endl;     // Print each line
     }
 
@@ -122,4 +131,61 @@ void find_title(string titlestring) {
             std::cout << line << std::endl;
     }
     file.close();   // Close the file
+}
+
+void print_time(string miltimeout) {
+    std::ifstream file("agenda.txt");   // Open the file
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {    // Read lines until end of file
+        string linetest = line;
+
+        linetest = toUpper(linetest);
+        int pos = linetest.find(miltimeout);
+        if (pos != string::npos)
+            std::cout << line << std::endl;
+        else
+            linetest = removeSpaces(linetest);
+            pos = linetest.find(miltimeout);
+            if (pos != string::npos)
+                std::cout << line << std::endl;
+    }
+    file.close();   // Close the file
+}
+
+string toUpper(const string& s){
+    string result = s;
+    for(char& c : result){
+        c = toupper(c);
+    }
+    return result;
+}
+
+string removeSpaces(const string& s) {
+    std::string str = s;
+    std::string result;
+    for (char c : str) {
+        if (c != ' ') {
+            result += c;
+        }
+    }
+    return result;
+}
+
+string trimSpaces(const string& s) {
+    std::string result;
+    size_t start = 0;
+    while (start < s.size() && s[start] == ' ') {
+        ++start;
+    }
+    size_t end = s.size();
+    while (end > start && s[end - 1] == ' ') {
+        --end;
+    }
+    result = s.substr(start, end - start);
+
+    return result;
 }
