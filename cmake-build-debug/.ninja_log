@@ -1,0 +1,10 @@
+# ninja log v5
+1	54	7669639041132929	CMakeFiles/WorkFile_2.dir/appointment.cc.obj	5bbc8607e0d5075
+5	60	7669639041182827	CMakeFiles/WorkFile_2.dir/appointment_main.cc.obj	456e0282fc90532c
+6	304	7669656492754601	CMakeFiles/WorkFile_2.dir/appointment.cc.obj	5bbc8607e0d5075
+10	489	7669658105136925	CMakeFiles/WorkFile_2.dir/appointment_main.cc.obj	456e0282fc90532c
+4	569	7669658105936893	CMakeFiles/WorkFile_2.dir/appointment.cc.obj	5bbc8607e0d5075
+569	678	7669658106966896	WorkFile_2.exe	ad698f6359b38b46
+4	444	7669673116003020	CMakeFiles/WorkFile_2.dir/appointment_main.cc.obj	456e0282fc90532c
+10	533	7669673116912997	CMakeFiles/WorkFile_2.dir/appointment.cc.obj	5bbc8607e0d5075
+534	659	7669673118113281	WorkFile_2.exe	ad698f6359b38b46
