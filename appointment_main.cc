@@ -14,30 +14,61 @@
  *
  * Will need a menu 1 = Add new Appt, 2 = Print Daily Schedule, 3 = Print Appts at Time, 4 = Delete Title, 5 = Delete Time
  */
-
-
-#include "appointment.h"
 #include <iostream>
+#include <fstream>
+#include <string>
+#include "appointment.h"
+
+// Function declarations
+void add_appt();
+void print_daily();
+void find_title(string titlestring);
+
 using namespace std;
 
-
 int main(int argc, char const *argv[]) {
-    //test your class here
+
+    // Class declaration
+    //Appointment a1;
+    int menuitem;
+    bool quit = false;
+    string titlename;
+
+    /* While Loop for Menu Items */
+    while (!quit) {
+        cout << endl << "Menu: (1) Add Appt (2) Daily Sched  (3) Print By Time  (4) Del Appt By Title  (5) Del By Time  (6) Quit : " << endl;
+        cin >> menuitem;
+
+        switch (menuitem) {
+            case 1: /* add appointment here */;
+                add_appt();
+                break;
+            case 2: /* print daily here */;
+                print_daily();
+                break;
+            case 3: /* print by time here */;
+                cout << "Enter title to search: " << endl;
+                cin >> titlename;
+                find_title(titlename);
+                break;
+            case 4: /* delete by title  here */;
+                break;
+            case 5: /* delete by time here */;
+                break;
+            case 6: /* quit the program */;
+                quit = true;
+                break;
+        }
+    }
+
+    return 0;
+}
+
+void add_appt() {
     Appointment a1;
 
     string title, timeStr;
-    int menuitem, year, month, day, duration;
-
-    cout << "Enter Selecttion (1) Add Appt   (2) Print Daily Sched   (3) Print By Time   (4) Delete Appt By Title   (5) Delete By Time : ";
-    cin >> menuitem;
-
-    switch (menuitem) {
-        case 1: /* add appointment here */; break;
-        case 2: /* print daily here */; break;
-        case 3: /* print by time here */; break;
-        case 4: /* delete by title  here */; break;
-        case 5: /* delete by time here */; break;
-    }
+    int year, month, day, duration;
 
     cout << "Enter appointment title: ";
     getline(cin, title);
@@ -62,7 +93,33 @@ int main(int argc, char const *argv[]) {
 
     cout << "\nYour Appointment:" << endl;
     cout << a1.getTitle() << " on " << a1.getDate() << " at " << a1.getStandardTime() << ", duration: " << a1.getDuration() << " mins\n";
-
-    return 0;
 }
 
+void print_daily() {
+    std::ifstream file("agenda.txt");   // Open the file
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {    // Read lines until end of file
+        std::cout << line << std::endl;     // Print each line
+    }
+
+    file.close();   // Close the file
+}
+
+void find_title(string titlestring) {
+    std::ifstream file("agenda.txt");   // Open the file
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {    // Read lines until end of file
+        int pos = line.find(titlestring);
+        if (pos != string::npos)
+            std::cout << line << std::endl;
+    }
+    file.close();   // Close the file
+}
