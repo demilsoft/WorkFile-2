@@ -61,17 +61,20 @@ int main(int argc, char const *argv[]) {
                 printDaily();
                 break;
             case 3: /* print by time here */
+                // Complete
                 cout << "Enter military time to search: " << endl;
                 cin >> miltimein;
                 miltimeout = a1.militaryToStandard(miltimein);
                 findTime(miltimeout);
                 break;
             case 4: /* delete by title  here */;
+                // Complete
                 cout << "Enter title to search: " << endl;
                 cin >> titlename;
                 deleteRowByTitle(titlename);
                 break;
             case 5: /* delete by time here */;
+                //Complete
                 cout << "Enter military time to search: " << endl;
                 cin >> miltimein;
                 miltimeout = a1.militaryToStandard(miltimein);
@@ -89,11 +92,11 @@ int main(int argc, char const *argv[]) {
 void addAppt() {
     Appointment a1;
 
-    string title, timeStr;
+    string title, timeStr, inputline;
     int year, month, day, duration;
 
     cout << "Enter appointment title: ";
-    getline(cin, title);
+    cin >> title;
     cout << "Enter year: ";
     cin >> year;
     cout << "Enter month (1-12): ";
@@ -113,8 +116,38 @@ void addAppt() {
     a1.setTime(Appointment::standardToMilitary(timeStr));
     a1.setDuration(duration);
 
-    cout << "\nYour Appointment:" << endl;
+    cout << "\nAdding Your Appointment:" << endl;
     cout << a1.getTitle() << " on " << a1.getDate() << " at " << a1.getStandardTime() << ", duration: " << a1.getDuration() << " mins\n";
+
+    inputline = a1.getTitle() + '|' + std::to_string(a1.getYear()) + '|' + std::to_string(a1.getMonth()) + '|' + std::to_string(a1.getDay()) + '|' + a1.getStandardTime() + '|' + std::to_string(a1.getDuration());
+    cout << inputline << endl;
+
+    // Open file to add new record
+    std::ifstream file("agenda.txt");
+    std::ofstream tempFile("temp.txt");  // Creates new temp file to store appointments
+    std::string line;
+
+    // Write out lines in tem file to the end.
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
+    }
+    else {
+        while (std::getline(file, line)) {    // Read lines until end of file
+            if (line != "") {
+                tempFile << line << std::endl;
+            }
+        }
+        // Write new line
+        tempFile << inputline << std::endl;
+
+
+    file.close();
+    tempFile.close();
+
+    // Replace original file with the temporary file
+    std::remove("agenda.txt");
+    std::rename("temp.txt", "agenda.txt");
+    }
 }
 
 void printDaily() {
@@ -282,7 +315,6 @@ void deleteRowByTime(string miltimeout) {
     if (!file.is_open()) {
         std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
     }
-
 
     while (std::getline(file, line)) {    // Read lines until end of file
         string linetest = line;
