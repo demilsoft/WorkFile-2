@@ -30,11 +30,13 @@
 void addAppt();
 void printDaily();
 void findTime(string miltimeout);
-void findTitle(string titlestring);
 string toUpper(const string& s);
 string removeSpaces(const string& s);
 string trimSpaces(const string& s);
 int findDelimitPos(const std::string& str, char ch, int n);
+void deleteRowByTime(string miltimeout);
+void deleteRowByTitle(string stringtomatch);
+void findTitle(string titlestring);
 
 using namespace std;
 
@@ -67,9 +69,13 @@ int main(int argc, char const *argv[]) {
             case 4: /* delete by title  here */;
                 cout << "Enter title to search: " << endl;
                 cin >> titlename;
-                findTitle(titlename);
+                deleteRowByTitle(titlename);
                 break;
             case 5: /* delete by time here */;
+                cout << "Enter military time to search: " << endl;
+                cin >> miltimein;
+                miltimeout = a1.militaryToStandard(miltimein);
+                deleteRowByTime(miltimeout);
                 break;
             case 6: /* quit the program */;
                 quit = true;
@@ -170,21 +176,6 @@ void printDaily() {
     file.close();   // Close the file
 }
 
-void findTitle(string titlestring) {
-    std::ifstream file("agenda.txt");   // Open the file
-    if (!file.is_open()) {
-        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
-    }
-
-    std::string line;
-    while (std::getline(file, line)) {    // Read lines until end of file
-        int pos = line.find(titlestring);
-        if (pos != string::npos)
-            std::cout << line << std::endl;
-    }
-    file.close();   // Close the file
-}
-
 void findTime(string miltimeout) {
     std::ifstream file("agenda.txt");   // Open the file
     if (!file.is_open()) {
@@ -197,13 +188,15 @@ void findTime(string miltimeout) {
 
         linetest = toUpper(linetest);
         int pos = linetest.find(miltimeout);
-        if (pos != string::npos)
+        if (pos != string::npos) {
             std::cout << line << std::endl;
-        else
+        }
+        else {
             linetest = removeSpaces(linetest);
             pos = linetest.find(miltimeout);
             if (pos != string::npos)
                 std::cout << line << std::endl;
+        }
     }
     file.close();   // Close the file
 }
@@ -255,3 +248,76 @@ int findDelimitPos(const std::string& str, char ch, int n) {
     return -1; // Return -1 if the nth instance is not found
 }
 
+void deleteRowByTitle(string stringtomatch) {
+    std::ifstream file("agenda.txt");
+    std::ofstream tempFile("temp.txt");  // Creates new temp file to store appointments
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
+    }
+
+    // Match input string to delete. If no match is found the row is copied to temp file to replace original file
+    while (std::getline(file, line)) {    // Read lines until end of file
+        int pos = toUpper(line).find(toUpper(stringtomatch));
+        if (pos == string::npos && line != "") {
+            // Line to delete is found. Call delete.
+            tempFile << line << std::endl;
+        }
+    }
+
+    file.close();
+    tempFile.close();
+
+    // Replace original file with the temporary file
+    std::remove("agenda.txt");
+    std::rename("temp.txt", "agenda.txt");
+}
+
+void deleteRowByTime(string miltimeout) {
+    std::ifstream file("agenda.txt");
+    std::ofstream tempFile("temp.txt");  // Creates new temp file to store appointments
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
+    }
+
+
+    while (std::getline(file, line)) {    // Read lines until end of file
+        string linetest = line;
+
+        linetest = toUpper(linetest);
+        int pos = linetest.find(miltimeout);
+        if (pos == string::npos && linetest != "") {
+            linetest = removeSpaces(linetest);
+            pos = linetest.find(miltimeout);
+            if (pos == string::npos && linetest != "") {
+                    tempFile << line << std::endl;
+            }
+        }
+    }
+    file.close();
+    tempFile.close();
+
+    // Replace original file with the temporary file
+    std::remove("agenda.txt");
+    std::rename("temp.txt", "agenda.txt");
+}
+
+// NOT USED
+void findTitle(string titlestring) {
+    std::ifstream file("agenda.txt");   // Open the file
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {    // Read lines until end of file
+        int pos = line.find(titlestring);
+        if (pos != string::npos)
+            // Line to delete is found. Call delete.
+            std::cout << line << std::endl;
+    }
+    file.close();   // Close the file
+}
