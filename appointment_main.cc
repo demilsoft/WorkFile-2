@@ -9,15 +9,15 @@
  *  1. Open and write appointment at end of file
  *          Format - Cleanup and add header
  *          save (append)
- *  2. Open and delete matching title
- *          Delete Record
- *  3. Open and delete matching starting military time
- *          Delete Record
- *  4. Open and print matching military time
- *          Add header row
- *  5. Open and print current daily schedule ordered by military time
+ *  2. Open and print current daily schedule ordered by military time
  *          Search by Year | Month | Day
  *          Sort by time
+ *  3. Open and print matching military time
+ *          Add header row
+ *  4. Open and delete matching title
+ *          Delete Record
+ *  5. Open and delete matching starting military time
+ *          Delete Record
  *
  * Will need a menu 1 = Add new Appt, 2 = Print Daily Schedule, 3 = Print Appts at Time, 4 = Delete Title, 5 = Delete Time
  */
@@ -27,10 +27,10 @@
 #include "appointment.h"
 
 // Function declarations
-void add_appt();
-void print_daily();
-void print_time(string miltimeout);
-void find_title(string titlestring);
+void addAppt();
+void printDaily();
+void findTime(string miltimeout);
+void findTitle(string titlestring);
 string toUpper(const string& s);
 string removeSpaces(const string& s);
 string trimSpaces(const string& s);
@@ -48,26 +48,26 @@ int main(int argc, char const *argv[]) {
 
     /* While Loop for Menu Items */
     while (!quit) {
-        cout << endl << "Menu: (1) Add Appt (2) Daily Sched  (3) Print By Time  (4) Del Appt By Title  (5) Del By Time  (6) Quit : " << endl;
+        cout << endl << "Menu: (1) Add Appt (2) Daily Sched  (3) Print By Time  (4) Del By Title  (5) Del By Time  (6) Quit : " << endl;
         cin >> menuitem;
 
         switch (menuitem) {
             case 1: /* add appointment here */;
-                add_appt();
+                addAppt();
                 break;
             case 2: /* print daily here */;
-                print_daily();
+                printDaily();
                 break;
             case 3: /* print by time here */
                 cout << "Enter military time to search: " << endl;
                 cin >> miltimein;
                 miltimeout = a1.militaryToStandard(miltimein);
-                print_time(miltimeout);
+                findTime(miltimeout);
                 break;
             case 4: /* delete by title  here */;
                 cout << "Enter title to search: " << endl;
                 cin >> titlename;
-                find_title(titlename);
+                findTitle(titlename);
                 break;
             case 5: /* delete by time here */;
                 break;
@@ -80,7 +80,7 @@ int main(int argc, char const *argv[]) {
     return 0;
 }
 
-void add_appt() {
+void addAppt() {
     Appointment a1;
 
     string title, timeStr;
@@ -111,7 +111,7 @@ void add_appt() {
     cout << a1.getTitle() << " on " << a1.getDate() << " at " << a1.getStandardTime() << ", duration: " << a1.getDuration() << " mins\n";
 }
 
-void print_daily() {
+void printDaily() {
 
     Appointment a1;
     int year, month, day, pos;
@@ -170,7 +170,7 @@ void print_daily() {
     file.close();   // Close the file
 }
 
-void find_title(string titlestring) {
+void findTitle(string titlestring) {
     std::ifstream file("agenda.txt");   // Open the file
     if (!file.is_open()) {
         std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
@@ -185,7 +185,7 @@ void find_title(string titlestring) {
     file.close();   // Close the file
 }
 
-void print_time(string miltimeout) {
+void findTime(string miltimeout) {
     std::ifstream file("agenda.txt");   // Open the file
     if (!file.is_open()) {
         std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
@@ -254,3 +254,4 @@ int findDelimitPos(const std::string& str, char ch, int n) {
     }
     return -1; // Return -1 if the nth instance is not found
 }
+
