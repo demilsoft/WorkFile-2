@@ -5,22 +5,6 @@
  *   @brief: This program uses seprate compilation to combine multiple files to prompt the user with a year, month, day, time, duration and asks for a name of the name of the appointment.
  */
 
-/*
- *  1. Open and write appointment at end of file
- *          Format - Cleanup and add header
- *          save (append)
- *  2. Open and print current daily schedule ordered by military time
- *          Search by Year | Month | Day
- *          Sort by time
- *  3. Open and print matching military time
- *          Add header row
- *  4. Open and delete matching title
- *          Delete Record
- *  5. Open and delete matching starting military time
- *          Delete Record
- *
- * Will need a menu 1 = Add new Appt, 2 = Print Daily Schedule, 3 = Print Appts at Time, 4 = Delete Title, 5 = Delete Time
- */
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -36,54 +20,49 @@ string trimSpaces(const string& s);
 int findDelimitPos(const std::string& str, char ch, int n);
 void deleteRowByTime(string miltimeout);
 void deleteRowByTitle(string stringtomatch);
-void findTitle(string titlestring);
 
 using namespace std;
 
 int main(int argc, char const *argv[]) {
 
-    // Class declaration
+    // Get Command Argument
+    string arg1 = argv[1];
+    // Include Appointment Class
     Appointment a1;
     int menuitem, miltimein;
     bool quit = false;
     string titlename, miltimeout;
 
     /* While Loop for Menu Items */
-    while (!quit) {
-        cout << endl << "Menu: (1) Add Appt (2) Daily Sched  (3) Print By Time  (4) Del By Title  (5) Del By Time  (6) Quit : " << endl;
-        cin >> menuitem;
-
-        switch (menuitem) {
-            case 1: /* add appointment here */;
-                addAppt();
-                break;
-            case 2: /* print daily here */;
-                printDaily();
-                break;
-            case 3: /* print by time here */
-                // Complete
-                cout << "Enter military time to search: " << endl;
-                cin >> miltimein;
-                miltimeout = a1.militaryToStandard(miltimein);
-                findTime(miltimeout);
-                break;
-            case 4: /* delete by title  here */;
-                // Complete
-                cout << "Enter title to search: " << endl;
-                cin >> titlename;
-                deleteRowByTitle(titlename);
-                break;
-            case 5: /* delete by time here */;
-                //Complete
-                cout << "Enter military time to search: " << endl;
-                cin >> miltimein;
-                miltimeout = a1.militaryToStandard(miltimein);
-                deleteRowByTime(miltimeout);
-                break;
-            case 6: /* quit the program */;
-                quit = true;
-                break;
-        }
+    if (arg1 == "-a") {
+        /* -a   add appointment */;
+        addAppt();
+    }
+    else if (arg1 == "-ps") {
+        printDaily();
+    }
+    else if (arg1 == "-p") {
+        /* -p   search military time */;
+        cout << "Enter military time to search: " << endl;
+        cin >> miltimein;
+        miltimeout = a1.militaryToStandard(miltimein);
+        findTime(miltimeout);
+    }
+    else if (arg1 == "-dt") {
+        /* -dt   delete by title */;
+        cout << "Enter title to search: " << endl;
+        cin >> titlename;
+        deleteRowByTitle(titlename);
+    }
+    else if (arg1 == "-dm") {
+        /* -dm   delete by military time */;
+        cout << "Enter military time to search: " << endl;
+        cin >> miltimein;
+        miltimeout = a1.militaryToStandard(miltimein);
+        deleteRowByTime(miltimeout);
+    }
+    else {
+        cout << "You entered an invalid parameter." << endl;
     }
 
     return 0;
@@ -96,7 +75,7 @@ void addAppt() {
     int year, month, day, duration;
 
     cout << "Enter appointment title: ";
-    cin >> title;
+    std::getline(std::cin >> std::ws, title);  // Using getline and std::ws to allow spaces
     cout << "Enter year: ";
     cin >> year;
     cout << "Enter month (1-12): ";
@@ -133,19 +112,19 @@ void addAppt() {
     }
     else {
         while (std::getline(file, line)) {    // Read lines until end of file
-            if (line != "") {
-                tempFile << line << std::endl;
+            if (line != "") { // Clears out empty lines from file
+                tempFile << trimSpaces(toUpper(line)) << std::endl; //add existing lines to new file and formats text
             }
         }
-        // Write new line
-        tempFile << inputline << std::endl;
-
+        // Write new line at end of file
+        tempFile << trimSpaces(toUpper(inputline)) << std::endl;
 
     file.close();
     tempFile.close();
 
     // Replace original file with the temporary file
-    std::remove("agenda.txt");
+    // std::remove("agenda.txt");
+    std::rename("agenda.txt", "agenda_old.txt");
     std::rename("temp.txt", "agenda.txt");
     }
 }
@@ -171,42 +150,43 @@ void printDaily() {
     if (!file.is_open()) {
         std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
     }
-
-    std::string line;
-    while (std::getline(file, line)) {    // Read lines until end of file
-        line = trimSpaces(line);
-        if (line != "") //Skips blank lines
-        {
-            // Use inputs to find matching year, month day for output
-            pos = line.find(std::to_string(a1.getYear()));
-            if (pos > 0) {
-                pos = line.find(std::to_string(a1.getMonth()));
+    else {
+        std::string line;
+        while (std::getline(file, line)) {    // Read lines until end of file
+            line = trimSpaces(line);
+            if (line != "") //Skips blank lines
+            {
+                // Use inputs to find matching year, month day for output
+                pos = line.find(std::to_string(a1.getYear()));
                 if (pos > 0) {
-                    pos = line.find(std::to_string(a1.getDay()));
+                    pos = line.find(std::to_string(a1.getMonth()));
                     if (pos > 0) {
-                        // Find position of time in string
-                        int startpos = 0;
-                        int endpos = 0;
-                        int milapptime = 0;
+                        pos = line.find(std::to_string(a1.getDay()));
+                        if (pos > 0) {
+                            // Find position of time in string
+                            int startpos = 0;
+                            int endpos = 0;
+                            int milapptime = 0;
 
-                        // Find delimiter positions for appointment time
-                        startpos = findDelimitPos(line, '|', 4);
-                        endpos = findDelimitPos(line, '|', 5);
-                        //Extract Time from appointment using position
-                        std::string appttime = line.substr(startpos + 1, endpos - startpos - 1); // Extract Time
-                        //Trim and format time output
-                        appttime = trimSpaces(appttime);
-                        appttime = toUpper(appttime);
-                        //Convert to military time
-                        milapptime = a1.standardToMilitary(appttime);
+                            // Find delimiter positions for appointment time
+                            startpos = findDelimitPos(line, '|', 4);
+                            endpos = findDelimitPos(line, '|', 5);
+                            //Extract Time from appointment using position
+                            std::string appttime = line.substr(startpos + 1, endpos - startpos - 1); // Extract Time
+                            //Trim and format time output
+                            appttime = trimSpaces(appttime);
+                            appttime = toUpper(appttime);
+                            //Convert to military time
+                            milapptime = a1.standardToMilitary(appttime);
 
-                        std::cout << line << std::endl;
+                            std::cout << line << std::endl;
+                        }
                     }
-                }
-            }
+                 }
+             }
         }
+        file.close();   // Close the file
     }
-    file.close();   // Close the file
 }
 
 void findTime(string miltimeout) {
@@ -214,24 +194,94 @@ void findTime(string miltimeout) {
     if (!file.is_open()) {
         std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
     }
+    else {
+        std::string line;
+        while (std::getline(file, line)) {    // Read lines until end of file
+            string linetest = line;
 
-    std::string line;
-    while (std::getline(file, line)) {    // Read lines until end of file
-        string linetest = line;
-
-        linetest = toUpper(linetest);
-        int pos = linetest.find(miltimeout);
-        if (pos != string::npos) {
-            std::cout << line << std::endl;
-        }
-        else {
-            linetest = removeSpaces(linetest);
-            pos = linetest.find(miltimeout);
-            if (pos != string::npos)
+            linetest = toUpper(linetest);
+            int pos = linetest.find(miltimeout);
+            if (pos != string::npos) {
                 std::cout << line << std::endl;
+            } else {
+                linetest = removeSpaces(linetest);
+                pos = linetest.find(miltimeout);
+                if (pos != string::npos)
+                    std::cout << line << std::endl;
+            }
+        }
+        file.close();   // Close the file
+    }
+}
+
+void deleteRowByTitle(string stringtomatch) {
+    std::ifstream file("agenda.txt");
+    std::ofstream tempFile("temp.txt");  // Creates new temp file to store appointments
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
+    }
+    else {
+        // Match input string to delete. If no match is found the row is copied to temp file to replace original file
+        while (std::getline(file, line)) {    // Read lines until end of file
+            int pos = toUpper(line).find(toUpper(stringtomatch));
+            if (pos == string::npos && line != "") {
+                // Line to delete is found. Call delete.
+                tempFile << line << std::endl;
+            }
+        }
+        file.close();
+        tempFile.close();
+
+        // Replace original file with the temporary file
+        std::rename("agenda.txt", "agenda_old.txt");
+        std::rename("temp.txt", "agenda.txt");
+    }
+}
+
+void deleteRowByTime(string miltimeout) {
+    std::ifstream file("agenda.txt");
+    std::ofstream tempFile("temp.txt");  // Creates new temp file to store appointments
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
+    }
+    else {
+        while (std::getline(file, line)) {    // Read lines until end of file
+            string linetest = line;
+
+            linetest = toUpper(linetest);
+            int pos = linetest.find(miltimeout);
+            if (pos == string::npos && linetest != "") {
+                linetest = removeSpaces(linetest);
+                pos = linetest.find(miltimeout);
+                if (pos == string::npos && linetest != "") {
+                        tempFile << line << std::endl;
+                }
+            }
+        }
+        file.close();
+        tempFile.close();
+
+        // Replace original file with the temporary file
+        std::rename("agenda.txt", "agenda_old.txt");
+        std::rename("temp.txt", "agenda.txt");
+    }
+}
+
+int findDelimitPos(const std::string& str, char ch, int n) {
+    int count = 0;
+    for (size_t pos = 0; pos < str.length(); ++pos) {
+        if (str[pos] == ch) {
+            ++count;
+            if (count == n) {
+                return pos;
+            }
         }
     }
-    file.close();   // Close the file
+    return -1; // Return -1 if the nth instance is not found
 }
 
 string toUpper(const string& s){
@@ -266,90 +316,4 @@ string trimSpaces(const string& s) {
     result = s.substr(start, end - start);
 
     return result;
-}
-
-int findDelimitPos(const std::string& str, char ch, int n) {
-    int count = 0;
-    for (size_t pos = 0; pos < str.length(); ++pos) {
-        if (str[pos] == ch) {
-            ++count;
-            if (count == n) {
-                return pos;
-            }
-        }
-    }
-    return -1; // Return -1 if the nth instance is not found
-}
-
-void deleteRowByTitle(string stringtomatch) {
-    std::ifstream file("agenda.txt");
-    std::ofstream tempFile("temp.txt");  // Creates new temp file to store appointments
-    std::string line;
-
-    if (!file.is_open()) {
-        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
-    }
-
-    // Match input string to delete. If no match is found the row is copied to temp file to replace original file
-    while (std::getline(file, line)) {    // Read lines until end of file
-        int pos = toUpper(line).find(toUpper(stringtomatch));
-        if (pos == string::npos && line != "") {
-            // Line to delete is found. Call delete.
-            tempFile << line << std::endl;
-        }
-    }
-
-    file.close();
-    tempFile.close();
-
-    // Replace original file with the temporary file
-    std::remove("agenda.txt");
-    std::rename("temp.txt", "agenda.txt");
-}
-
-void deleteRowByTime(string miltimeout) {
-    std::ifstream file("agenda.txt");
-    std::ofstream tempFile("temp.txt");  // Creates new temp file to store appointments
-    std::string line;
-
-    if (!file.is_open()) {
-        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
-    }
-
-    while (std::getline(file, line)) {    // Read lines until end of file
-        string linetest = line;
-
-        linetest = toUpper(linetest);
-        int pos = linetest.find(miltimeout);
-        if (pos == string::npos && linetest != "") {
-            linetest = removeSpaces(linetest);
-            pos = linetest.find(miltimeout);
-            if (pos == string::npos && linetest != "") {
-                    tempFile << line << std::endl;
-            }
-        }
-    }
-    file.close();
-    tempFile.close();
-
-    // Replace original file with the temporary file
-    std::remove("agenda.txt");
-    std::rename("temp.txt", "agenda.txt");
-}
-
-// NOT USED
-void findTitle(string titlestring) {
-    std::ifstream file("agenda.txt");   // Open the file
-    if (!file.is_open()) {
-        std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
-    }
-
-    std::string line;
-    while (std::getline(file, line)) {    // Read lines until end of file
-        int pos = line.find(titlestring);
-        if (pos != string::npos)
-            // Line to delete is found. Call delete.
-            std::cout << line << std::endl;
-    }
-    file.close();   // Close the file
 }
