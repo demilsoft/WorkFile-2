@@ -34,6 +34,7 @@ void find_title(string titlestring);
 string toUpper(const string& s);
 string removeSpaces(const string& s);
 string trimSpaces(const string& s);
+int findDelimitPos(const std::string& str, char ch, int n);
 
 using namespace std;
 
@@ -111,6 +112,22 @@ void add_appt() {
 }
 
 void print_daily() {
+
+    Appointment a1;
+    int year, month, day, pos;
+
+    // Get search day for daily schedule
+    cout << "Enter year: ";
+    cin >> year;
+    cout << "Enter month (1-12): ";
+    cin >> month;
+    cout << "Enter day (1-31): ";
+    cin >> day;
+
+    a1.setYear(year);
+    a1.setMonth(month);
+    a1.setDay(day);
+
     std::ifstream file("agenda.txt");   // Open the file
     if (!file.is_open()) {
         std::cerr << "Error opening file!" << std::endl;   //Return error if cannot open
@@ -119,12 +136,37 @@ void print_daily() {
     std::string line;
     while (std::getline(file, line)) {    // Read lines until end of file
         line = trimSpaces(line);
-        if (line != "")
+        if (line != "") //Skips blank lines
         {
-            std::cout << line << std::endl;     // Print each line
+            // Use inputs to find matching year, month day for output
+            pos = line.find(std::to_string(a1.getYear()));
+            if (pos > 0) {
+                pos = line.find(std::to_string(a1.getMonth()));
+                if (pos > 0) {
+                    pos = line.find(std::to_string(a1.getDay()));
+                    if (pos > 0) {
+                        // Find position of time in string
+                        int startpos = 0;
+                        int endpos = 0;
+                        int milapptime = 0;
+
+                        // Find delimiter positions for appointment time
+                        startpos = findDelimitPos(line, '|', 4);
+                        endpos = findDelimitPos(line, '|', 5);
+                        //Extract Time from appointment using position
+                        std::string appttime = line.substr(startpos + 1, endpos - startpos - 1); // Extract Time
+                        //Trim and format time output
+                        appttime = trimSpaces(appttime);
+                        appttime = toUpper(appttime);
+                        //Convert to military time
+                        milapptime = a1.standardToMilitary(appttime);
+
+                        std::cout << line << std::endl;
+                    }
+                }
+            }
         }
     }
-
     file.close();   // Close the file
 }
 
@@ -198,4 +240,17 @@ string trimSpaces(const string& s) {
     result = s.substr(start, end - start);
 
     return result;
+}
+
+int findDelimitPos(const std::string& str, char ch, int n) {
+    int count = 0;
+    for (size_t pos = 0; pos < str.length(); ++pos) {
+        if (str[pos] == ch) {
+            ++count;
+            if (count == n) {
+                return pos;
+            }
+        }
+    }
+    return -1; // Return -1 if the nth instance is not found
 }
