@@ -10,7 +10,7 @@ public:
     Appointment();
     Appointment(string appData);
 
-    // Class Overload Function to compare titles
+    // Class == Overload Function to compare titles
     Appointment(string newTitle, int var){
         title = newTitle;
         }

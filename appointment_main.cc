@@ -119,7 +119,7 @@ void addAppt() {
                 int endpos = 0;
                 string linetitle;
                 endpos = findDelimitPos(line, '|', 1);
-                linetitle = line.substr(0, endpos - 1);
+                linetitle = line.substr(0, endpos);
                 // Test if title are equal in class
                 Appointment currtitle ( trimSpaces(toUpper(linetitle)), 0);
                 Appointment newtitle (trimSpaces(toUpper(title)), 0);

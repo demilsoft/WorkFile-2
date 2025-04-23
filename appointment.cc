@@ -132,17 +132,3 @@ int Appointment::standardToMilitary(string time) {
         return hour * 100 + minute;
     }
 }
-
-class AppointmentTitle{
-private:
-    string title;
-public:
-    AppointmentTitle(string inputtitle){
-        title = inputtitle;
-    }
-    bool operator == (const AppointmentTitle &a){
-        if (title == a.title)
-            return true;
-        return false;
-    }
-};
