@@ -1,18 +1,20 @@
 /**
  *   @file: appointment_main.cc
  *   @author: Matthew Lewis
- *   @date: 4/17/2025
- *   @brief: This program uses seprate compilation to combine multiple files to prompt the user with a year, month, day, time, duration and asks for a name of the name of the appointment.
+ *   @date: 4/23/2025
+ *   @brief: This program uses seprate compilation to combine multiple files to prompt the user with a year, month, day, time, duration and
+ *   asks for a name of the name of the appointment. We added functionality to create, view and delete stored appointments.
  */
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <iomanip>
+#include <vector>
 #include "appointment.h"
 
 
-// Function
+// Function Declarations
 void addAppt();
 void printDaily();
 void findTime(string miltimeout);
@@ -100,7 +102,7 @@ void addAppt() {
     cout << a1.getTitle() << " on " << a1.getDate() << " at " << a1.getStandardTime() << ", duration: " << a1.getDuration() << " mins\n";
 
     inputline = a1.getTitle() + '|' + std::to_string(a1.getYear()) + '|' + std::to_string(a1.getMonth()) + '|' + std::to_string(a1.getDay()) + '|' + a1.getStandardTime() + '|' + std::to_string(a1.getDuration());
-    cout << inputline << endl;
+    //cout << inputline << endl;
 
     // Open file to add new record
     std::ifstream file("agenda.txt");
@@ -125,9 +127,7 @@ void addAppt() {
                 Appointment currtitle ( trimSpaces(toUpper(linetitle)), 0);
                 Appointment newtitle (trimSpaces(toUpper(title)), 0);
                 if (currtitle == newtitle)
-                    cout<<"Equivalent"<<endl;
-                else
-                    cout<<"Not Equivalent"<<endl;
+                    cout<<"Using == overloading operator found Appointment Title Match. Appointment was added."<<endl;
 
                 //tempFile << trimSpaces(toUpper(line)) << std::endl; //add existing lines to new file and formats text
                 tempFile << trimSpaces(line) << std::endl; //add existing lines to new file and formats text
@@ -141,7 +141,6 @@ void addAppt() {
     tempFile.close();
 
     // Replace original file with the temporary file
-    // std::remove("agenda.txt");
     std::remove("agenda_old.txt");
     std::rename("agenda.txt", "agenda_old.txt");
     std::rename("temp.txt", "agenda.txt");
@@ -191,34 +190,38 @@ void printDaily() {
                     if (pos > 0) {
                         pos = line.find(std::to_string(a1.getDay()));
                         if (pos > 0) {
-                            // Find position of time in string
-                            int startpos = 0;
-                            int endpos = 0;
-                            int milapptime = 0;
+                            std::vector<std::string> parts;
+                            size_t start = 0;
 
-                            // Extract Title
-                            endpos = findDelimitPos(line, '|', 1);
-                            std::string apptitle = line.substr(startpos, endpos - startpos - 1); // Extract Title
-                            apptitle = trimSpaces(toUpper(apptitle));
-                            // Extract Duration
-                            startpos = findDelimitPos(line, '|', 5);
-                            std::string appduration = line.substr(startpos + 1, line.size()); // Extract Title
-                            appduration = trimSpaces(toUpper(appduration));
-                            // Find delimiter positions for appointment time
-                            startpos = findDelimitPos(line, '|', 4);
-                            endpos = findDelimitPos(line, '|', 5);
-                            //Extract Time from appointment using position
-                            std::string appttime = line.substr(startpos + 1, endpos - startpos - 1);
-                            appttime = trimSpaces(toUpper(appttime));
-                            //Convert to military time
-                            milapptime = a1.standardToMilitary(appttime);
+                            for (size_t i = 0; i <= line.length(); ++i) {
+                                if (i == line.length() || line[i] == '|') {
+                                    std::string part = line.substr(start, i - start);
+                                    parts.push_back(part);
+                                    start = i + 1;
+                                }
+                            }
+                            parts[4] = to_string(a1.standardToMilitary(parts[4]));
 
-                            std::cout << std::setw(35) << apptitle
-                                      << std::setw(12) << std::to_string(a1.getYear())
-                                      << std::setw(12) << std::to_string(a1.getMonth())
-                                      << std::setw(12) << std::to_string(a1.getDay())
-                                      << std::setw(12) << std::to_string(milapptime)
-                                      << std::setw(15) << appduration
+                            // Pads 0 when only 3 digits
+                            if (parts[4].size() == 3) {
+                                parts[4] = "0" + parts[4];
+                            }
+
+                            //std::sort(parts.begin(), parts.end());
+
+                            std::string title = parts[0];
+                            int year = std::stoi(parts[1]);
+                            int month = std::stoi(parts[2]);
+                            int day = std::stoi(parts[3]);
+                            std::string time = parts[4] ;
+                            int duration = std::stoi(parts[5]);
+
+                            std::cout << std::setw(35) << title
+                                      << std::setw(12) << std::to_string(year)
+                                      << std::setw(12) << std::to_string(month)
+                                      << std::setw(12) << std::to_string(day)
+                                      << std::setw(12) << time
+                                      << std::setw(15) << duration
                                       << std::endl;
 
                         }
@@ -243,12 +246,58 @@ void findTime(string miltimeout) {
             linetest = toUpper(linetest);
             int pos = linetest.find(miltimeout);
             if (pos != string::npos) {
-                std::cout << line << std::endl;
-            } else {
+                std::vector<std::string> parts;
+                size_t start = 0;
+
+                for (size_t i = 0; i <= line.length(); ++i) {
+                    if (i == line.length() || line[i] == '|') {
+                        std::string part = line.substr(start, i - start);
+                        parts.push_back(part);
+                        start = i + 1;
+                    }
+                }
+                std::string title = parts[0];
+                int year = std::stoi(parts[1]);
+                int month = std::stoi(parts[2]);
+                int day = std::stoi(parts[3]);
+                std::string time = parts[4];
+                int duration = std::stoi(parts[5]);
+
+                cout << "Title: " << title << endl;
+                cout << "Year: " << year << endl;
+                cout << "Month: " << month << endl;
+                cout << "Day: " << day << endl;
+                cout << "Time: " << time << endl;
+                cout << "Duration: " << duration << " minutes" << endl;
+            }
+            else {
                 linetest = removeSpaces(linetest);
                 pos = linetest.find(miltimeout);
-                if (pos != string::npos)
-                    std::cout << line << std::endl;
+                if (pos != string::npos){
+                    std::vector<std::string> parts;
+                    size_t start = 0;
+
+                    for (size_t i = 0; i <= line.length(); ++i) {
+                        if (i == line.length() || line[i] == '|') {
+                            std::string part = line.substr(start, i - start);
+                            parts.push_back(part);
+                            start = i + 1;
+                        }
+                    }
+                    std::string title = parts[0];
+                    int year = std::stoi(parts[1]);
+                    int month = std::stoi(parts[2]);
+                    int day = std::stoi(parts[3]);
+                    std::string time = parts[4];
+                    int duration = std::stoi(parts[5]);
+
+                    cout << "Title: " << title << endl;
+                    cout << "Year: " << year << endl;
+                    cout << "Month: " << month << endl;
+                    cout << "Day: " << day << endl;
+                    cout << "Time: " << time << endl;
+                    cout << "Duration: " << duration << " minutes" << endl;
+                }
             }
         }
         file.close();   // Close the file
@@ -270,9 +319,12 @@ void deleteRowByTitle(string stringtomatch) {
             if (pos == string::npos && line != "") {
                 tempFile << line << std::endl;
             }
+            else if (pos > -1)
+            {
+                cout << "\nRow Deleted:   " << toUpper(line) << endl;
+            }
         }
-        file.close();
-        tempFile.close();
+        file.close();        tempFile.close();
 
         // Replace original file with the temporary file
         std::remove("agenda_old.txt");
@@ -301,6 +353,14 @@ void deleteRowByTime(string miltimeout) {
                 if (pos == string::npos && linetest != "") {
                         tempFile << line << std::endl;
                 }
+                else if (pos > 0)
+                {
+                    cout << "\nRow Deleted:   " << linetest << endl;
+                }
+            }
+            else if (pos > 0)
+            {
+                cout << "\nRow Deleted:   " << linetest << endl;
             }
         }
         file.close();
