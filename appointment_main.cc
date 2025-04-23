@@ -268,7 +268,6 @@ void deleteRowByTitle(string stringtomatch) {
         while (std::getline(file, line)) {    // Read lines until end of file
             int pos = toUpper(line).find(toUpper(stringtomatch));
             if (pos == string::npos && line != "") {
-                // Line to delete is found. Call delete.
                 tempFile << line << std::endl;
             }
         }
