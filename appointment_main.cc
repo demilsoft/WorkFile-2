@@ -29,10 +29,9 @@ int main(int argc, char const *argv[]) {
     if (argc == 2) {
         // Get Command Argument
         string arg1 = argv[1];
-        // Include Appointment
+        // Include Appointment Class
         Appointment a1;
-        int menuitem, miltimein;
-        bool quit = false;
+        int miltimein;
         string titlename, miltimeout;
 
         /* Check for valid input arguments */
