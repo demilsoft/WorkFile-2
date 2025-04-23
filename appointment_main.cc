@@ -25,6 +25,7 @@ using namespace std;
 
 int main(int argc, char const *argv[]) {
 
+    // Check for correct number of arguments
     if (argc == 2) {
         // Get Command Argument
         string arg1 = argv[1];
@@ -58,11 +59,11 @@ int main(int argc, char const *argv[]) {
             miltimeout = a1.militaryToStandard(miltimein);
             deleteRowByTime(miltimeout);
         } else {
-            cout << "You entered an invalid parameter." << endl;
+            cout << "You entered an invalid argument." << endl;
         }
     }
     else {
-        cout << "You entered an invalid number of parameters." << endl;
+        cout << "You entered an invalid number of arguments." << endl;
     }
     return 0;
 }
