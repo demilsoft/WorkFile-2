@@ -27,7 +27,7 @@ int main(int argc, char const *argv[]) {
 
     // Get Command Argument
     string arg1 = argv[1];
-    // Include Appointment Class
+    // Include Appointment
     Appointment a1;
     int menuitem, miltimein;
     bool quit = false;
@@ -113,17 +113,35 @@ void addAppt() {
     else {
         while (std::getline(file, line)) {    // Read lines until end of file
             if (line != "") { // Clears out empty lines from file
-                tempFile << trimSpaces(toUpper(line)) << std::endl; //add existing lines to new file and formats text
+                // Check Duplicate Title Here
+                // Call Function to check and return true/false
+                // If false, reset and do not add new record. Print to screen duplicate name
+                int endpos = 0;
+                string linetitle;
+                endpos = findDelimitPos(line, '|', 1);
+                linetitle = line.substr(0, endpos - 1);
+                // Test if title are equal in class
+                Appointment currtitle ( trimSpaces(toUpper(linetitle)), 0);
+                Appointment newtitle (trimSpaces(toUpper(title)), 0);
+                if (currtitle == newtitle)
+                    cout<<"Equivalent"<<endl;
+                else
+                    cout<<"Not Equivalent"<<endl;
+
+                //tempFile << trimSpaces(toUpper(line)) << std::endl; //add existing lines to new file and formats text
+                tempFile << trimSpaces(line) << std::endl; //add existing lines to new file and formats text
             }
         }
         // Write new line at end of file
-        tempFile << trimSpaces(toUpper(inputline)) << std::endl;
+        //tempFile << trimSpaces(toUpper(inputline)) << std::endl;
+        tempFile << trimSpaces(inputline) << std::endl;
 
     file.close();
     tempFile.close();
 
     // Replace original file with the temporary file
     // std::remove("agenda.txt");
+    std::remove("agenda_old.txt");
     std::rename("agenda.txt", "agenda_old.txt");
     std::rename("temp.txt", "agenda.txt");
     }
@@ -235,6 +253,7 @@ void deleteRowByTitle(string stringtomatch) {
         tempFile.close();
 
         // Replace original file with the temporary file
+        std::remove("agenda_old.txt");
         std::rename("agenda.txt", "agenda_old.txt");
         std::rename("temp.txt", "agenda.txt");
     }
@@ -266,6 +285,7 @@ void deleteRowByTime(string miltimeout) {
         tempFile.close();
 
         // Replace original file with the temporary file
+        std::remove("agenda_old.txt");
         std::rename("agenda.txt", "agenda_old.txt");
         std::rename("temp.txt", "agenda.txt");
     }

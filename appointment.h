@@ -10,6 +10,16 @@ public:
     Appointment();
     Appointment(string appData);
 
+    // Class Overload Function to compare titles
+    Appointment(string newTitle, int var){
+        title = newTitle;
+        }
+        bool operator == (const Appointment &c){
+            if (title == c.title)
+                return true;
+            return false;
+        }
+
     string getTitle();
     int getYear();
     int getMonth();
