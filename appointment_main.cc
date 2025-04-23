@@ -74,7 +74,7 @@ void addAppt() {
     int year, month, day, duration;
 
     cout << "Enter appointment title: ";
-    std::getline(std::cin >> std::ws, title);  // Using getline and std::ws to allow spaces
+    getline(cin, title);
     cout << "Enter year: ";
     cin >> year;
     cout << "Enter month (1-12): ";
