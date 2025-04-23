@@ -25,46 +25,45 @@ using namespace std;
 
 int main(int argc, char const *argv[]) {
 
-    // Get Command Argument
-    string arg1 = argv[1];
-    // Include Appointment
-    Appointment a1;
-    int menuitem, miltimein;
-    bool quit = false;
-    string titlename, miltimeout;
+    if (argc == 2) {
+        // Get Command Argument
+        string arg1 = argv[1];
+        // Include Appointment
+        Appointment a1;
+        int menuitem, miltimein;
+        bool quit = false;
+        string titlename, miltimeout;
 
-    /* While Loop for Menu Items */
-    if (arg1 == "-a") {
-        /* -a   add appointment */;
-        addAppt();
-    }
-    else if (arg1 == "-ps") {
-        printDaily();
-    }
-    else if (arg1 == "-p") {
-        /* -p   search military time */;
-        cout << "Enter military time to search: " << endl;
-        cin >> miltimein;
-        miltimeout = a1.militaryToStandard(miltimein);
-        findTime(miltimeout);
-    }
-    else if (arg1 == "-dt") {
-        /* -dt   delete by title */;
-        cout << "Enter title to search: " << endl;
-        cin >> titlename;
-        deleteRowByTitle(titlename);
-    }
-    else if (arg1 == "-dm") {
-        /* -dm   delete by military time */;
-        cout << "Enter military time to search: " << endl;
-        cin >> miltimein;
-        miltimeout = a1.militaryToStandard(miltimein);
-        deleteRowByTime(miltimeout);
+        /* Check for valid input arguments */
+        if (arg1 == "-a") {
+            /* -a   add appointment */;
+            addAppt();
+        } else if (arg1 == "-ps") {
+            printDaily();
+        } else if (arg1 == "-p") {
+            /* -p   search military time */;
+            cout << "Enter military time to search: " << endl;
+            cin >> miltimein;
+            miltimeout = a1.militaryToStandard(miltimein);
+            findTime(miltimeout);
+        } else if (arg1 == "-dt") {
+            /* -dt   delete by title */;
+            cout << "Enter title to search: " << endl;
+            cin >> titlename;
+            deleteRowByTitle(titlename);
+        } else if (arg1 == "-dm") {
+            /* -dm   delete by military time */;
+            cout << "Enter military time to search: " << endl;
+            cin >> miltimein;
+            miltimeout = a1.militaryToStandard(miltimein);
+            deleteRowByTime(miltimeout);
+        } else {
+            cout << "You entered an invalid parameter." << endl;
+        }
     }
     else {
-        cout << "You entered an invalid parameter." << endl;
+        cout << "You entered an invalid number of parameters." << endl;
     }
-
     return 0;
 }
 
