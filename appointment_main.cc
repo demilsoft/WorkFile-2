@@ -8,9 +8,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iomanip>
 #include "appointment.h"
 
-// Function declarations
+
+// Function
 void addAppt();
 void printDaily();
 void findTime(string miltimeout);
@@ -169,6 +171,15 @@ void printDaily() {
     }
     else {
         std::string line;
+
+        std::cout << std::setw(35) << "Appointment Title"
+                  << std::setw(12) << "Year"
+                  << std::setw(12) << "Month"
+                  << std::setw(12) << "Day"
+                  << std::setw(12) << "Time"
+                  << std::setw(15) << "Duration"
+                  << std::endl;
+
         while (std::getline(file, line)) {    // Read lines until end of file
             line = trimSpaces(line);
             if (line != "") //Skips blank lines
@@ -185,18 +196,31 @@ void printDaily() {
                             int endpos = 0;
                             int milapptime = 0;
 
+                            // Extract Title
+                            endpos = findDelimitPos(line, '|', 1);
+                            std::string apptitle = line.substr(startpos, endpos - startpos - 1); // Extract Title
+                            apptitle = trimSpaces(toUpper(apptitle));
+                            // Extract Duration
+                            startpos = findDelimitPos(line, '|', 5);
+                            std::string appduration = line.substr(startpos + 1, line.size()); // Extract Title
+                            appduration = trimSpaces(toUpper(appduration));
                             // Find delimiter positions for appointment time
                             startpos = findDelimitPos(line, '|', 4);
                             endpos = findDelimitPos(line, '|', 5);
                             //Extract Time from appointment using position
-                            std::string appttime = line.substr(startpos + 1, endpos - startpos - 1); // Extract Time
-                            //Trim and format time output
-                            appttime = trimSpaces(appttime);
-                            appttime = toUpper(appttime);
+                            std::string appttime = line.substr(startpos + 1, endpos - startpos - 1);
+                            appttime = trimSpaces(toUpper(appttime));
                             //Convert to military time
                             milapptime = a1.standardToMilitary(appttime);
 
-                            std::cout << line << std::endl;
+                            std::cout << std::setw(35) << apptitle
+                                      << std::setw(12) << std::to_string(a1.getYear())
+                                      << std::setw(12) << std::to_string(a1.getMonth())
+                                      << std::setw(12) << std::to_string(a1.getDay())
+                                      << std::setw(12) << std::to_string(milapptime)
+                                      << std::setw(15) << appduration
+                                      << std::endl;
+
                         }
                     }
                  }
