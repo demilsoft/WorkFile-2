@@ -11,6 +11,7 @@ Appointment::Appointment(){
     time = 0;
     duration = 1;
 }
+
 Appointment::Appointment(string appData){
     size_t start = 0;
     while (start < appData.size() && appData[start] == ' ') {
@@ -131,3 +132,17 @@ int Appointment::standardToMilitary(string time) {
         return hour * 100 + minute;
     }
 }
+
+class AppointmentTitle{
+private:
+    string title;
+public:
+    AppointmentTitle(string inputtitle){
+        title = inputtitle;
+    }
+    bool operator == (const AppointmentTitle &a){
+        if (title == a.title)
+            return true;
+        return false;
+    }
+};
